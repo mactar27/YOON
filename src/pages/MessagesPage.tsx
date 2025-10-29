@@ -62,37 +62,34 @@ export default function MessagesPage() {
   };
 
   const loadMessages = async () => {
-    // Simulation de chargement des messages
-    // En production, ceci viendrait de la base de données
-    setTimeout(() => {
-      setMessages([
+    if (!expertId) return;
+
+    // Charger les messages depuis localStorage
+    const allMessages = JSON.parse(localStorage.getItem('yoon_messages') || '{}');
+    const conversationKey = `conversation_${expertId}`;
+
+    if (allMessages[conversationKey] && allMessages[conversationKey].length > 0) {
+      setMessages(allMessages[conversationKey]);
+    } else {
+      // Messages de bienvenue par défaut
+      const welcomeMessages = [
         {
-          id: '1',
-          content: 'Bonjour, je suis intéressé par une consultation concernant un problème de droit du travail.',
-          sender_id: 'user123',
-          receiver_id: expertId || '',
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-          is_read: true
-        },
-        {
-          id: '2',
-          content: 'Bonjour ! Je serais ravi de vous aider. Pouvez-vous me donner plus de détails sur votre situation ?',
+          id: 'welcome_' + expertId,
+          content: `Bonjour ! Je suis ${expert?.user?.full_name || 'cet expert'}. Comment puis-je vous aider avec votre problème juridique ?`,
           sender_id: expertId || '',
           receiver_id: 'user123',
-          created_at: new Date(Date.now() - 1800000).toISOString(),
+          created_at: new Date().toISOString(),
           is_read: true
-        },
-        {
-          id: '3',
-          content: 'Il s\'agit d\'un licenciement abusif. J\'ai été congédié sans motif valable.',
-          sender_id: 'user123',
-          receiver_id: expertId || '',
-          created_at: new Date(Date.now() - 900000).toISOString(),
-          is_read: false
         }
-      ]);
-      setLoading(false);
-    }, 1000);
+      ];
+      setMessages(welcomeMessages);
+
+      // Sauvegarder les messages de bienvenue
+      allMessages[conversationKey] = welcomeMessages;
+      localStorage.setItem('yoon_messages', JSON.stringify(allMessages));
+    }
+
+    setLoading(false);
   };
 
   const sendMessage = () => {
@@ -110,18 +107,49 @@ export default function MessagesPage() {
     setMessages(prev => [...prev, message]);
     setNewMessage('');
 
-    // Simulation de réponse automatique
-    setTimeout(() => {
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Merci pour ces informations. Je vais examiner votre dossier et vous recontacterai sous 24h avec mes recommandations.',
-        sender_id: expertId || '',
-        receiver_id: 'user123',
-        created_at: new Date().toISOString(),
-        is_read: false
-      };
-      setMessages(prev => [...prev, response]);
-    }, 2000);
+    // Sauvegarder les messages dans localStorage pour persister entre les sessions
+    const allMessages = JSON.parse(localStorage.getItem('yoon_messages') || '{}');
+    const conversationKey = `conversation_${expertId}`;
+    if (!allMessages[conversationKey]) {
+      allMessages[conversationKey] = [];
+    }
+    allMessages[conversationKey].push(message);
+    localStorage.setItem('yoon_messages', JSON.stringify(allMessages));
+
+    // Mettre à jour la liste des conversations
+    updateConversationsList(expertId || '', newMessage);
+  };
+
+  const updateConversationsList = (expertId: string, lastMessage: string) => {
+    const conversations = JSON.parse(localStorage.getItem('yoon_conversations') || '[]');
+    const existingIndex = conversations.findIndex((conv: any) => conv.expertId === expertId);
+
+    const expertNames: { [key: string]: string } = {
+      '1': 'Me. Fatou Diop',
+      '2': 'Me. Amadou Ndiaye',
+      '3': 'Me. Mariama Sow',
+      '4': 'Me. Ousmane Faye',
+      '5': 'Me. Khady Ba',
+      '6': 'Me. Abdoulaye Diallo'
+    };
+
+    if (existingIndex >= 0) {
+      conversations[existingIndex].lastMessage = lastMessage;
+      conversations[existingIndex].timestamp = new Date().toISOString();
+      conversations[existingIndex].unreadCount += 1;
+    } else {
+      conversations.push({
+        id: Date.now().toString(),
+        expertId,
+        expertName: expertNames[expertId] || 'Expert',
+        lastMessage,
+        timestamp: new Date().toISOString(),
+        unreadCount: 1,
+        avatar: expertNames[expertId]?.charAt(3) || 'E'
+      });
+    }
+
+    localStorage.setItem('yoon_conversations', JSON.stringify(conversations));
   };
 
   const scrollToBottom = () => {
@@ -174,56 +202,100 @@ export default function MessagesPage() {
       <div className="flex-1 px-6 py-4 max-w-4xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm h-[calc(100vh-200px)] flex flex-col">
           {/* Messages container */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.sender_id === 'user123' ? 'justify-end' : 'justify-start'}`}
-              >
+          <div className="flex-1 p-4 overflow-y-auto space-y-3">
+            {messages.map((message, index) => {
+              const isCurrentUser = message.sender_id === 'user123';
+              const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id;
+              const showTimestamp = index === messages.length - 1 ||
+                new Date(messages[index + 1].created_at).getTime() - new Date(message.created_at).getTime() > 300000; // 5 minutes
+
+              return (
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.sender_id === 'user123'
-                      ? 'bg-[#6B4C4C] text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
+                  key={message.id}
+                  className={`flex items-end gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.sender_id === 'user123' ? 'text-gray-200' : 'text-gray-500'
-                  }`}>
-                    {new Date(message.created_at).toLocaleTimeString('fr-FR', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
+                  {!isCurrentUser && showAvatar && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6B4C4C] to-[#8A6A6A] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      {expert?.user?.full_name.charAt(0).toUpperCase() || 'E'}
+                    </div>
+                  )}
+                  {!isCurrentUser && !showAvatar && <div className="w-8"></div>}
+
+                  <div className={`max-w-xs lg:max-w-md ${isCurrentUser ? 'order-1' : 'order-2'}`}>
+                    <div
+                      className={`px-4 py-2 rounded-2xl shadow-sm ${
+                        isCurrentUser
+                          ? 'bg-[#6B4C4C] text-white rounded-br-md'
+                          : 'bg-white text-gray-800 rounded-bl-md border border-gray-100'
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed">{message.content}</p>
+                    </div>
+
+                    {showTimestamp && (
+                      <p className={`text-xs mt-1 px-2 ${
+                        isCurrentUser ? 'text-right text-gray-400' : 'text-left text-gray-500'
+                      }`}>
+                        {new Date(message.created_at).toLocaleTimeString('fr-FR', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
+                  </div>
+
+                  {isCurrentUser && showAvatar && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#A9B299] to-[#8A9279] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      V
+                    </div>
+                  )}
+                  {isCurrentUser && !showAvatar && <div className="w-8"></div>}
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Message input */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Tapez votre message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A9B299] focus:border-transparent"
-              />
+          <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex gap-3 items-end">
+              <div className="flex-1 relative">
+                <textarea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                  placeholder="Tapez votre message..."
+                  rows={1}
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A9B299] focus:border-transparent resize-none max-h-32"
+                  style={{ minHeight: '48px' }}
+                />
+                <div className="absolute right-3 bottom-3 text-gray-400">
+                  <Send className="w-4 h-4" />
+                </div>
+              </div>
               <button
                 onClick={sendMessage}
                 disabled={!newMessage.trim()}
-                className="px-4 py-2 bg-[#6B4C4C] text-white rounded-lg hover:bg-[#5A3E3E] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-3 bg-[#6B4C4C] text-white rounded-2xl hover:bg-[#5A3E3E] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Appuyez sur Entrée pour envoyer • Shift+Entrée pour un retour à la ligne
-            </p>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-xs text-gray-500">
+                Appuyez sur Entrée pour envoyer • Shift+Entrée pour un retour à la ligne
+              </p>
+              {newMessage.trim() && (
+                <span className="text-xs text-gray-400">
+                  {newMessage.length} caractères
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

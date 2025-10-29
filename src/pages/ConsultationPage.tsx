@@ -15,7 +15,6 @@ interface Expert {
   contact_phone: string | null;
   user: {
     full_name: string;
-    avatar_url: string | null;
   };
 }
 

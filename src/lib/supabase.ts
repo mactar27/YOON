@@ -4,4 +4,17 @@ import type { Database } from './database.types';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'public-anon-key-here';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  db: {
+    schema: 'public'
+  },
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true
+  },
+  global: {
+    headers: {
+      'apikey': supabaseAnonKey,
+    },
+  },
+});

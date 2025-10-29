@@ -177,6 +177,26 @@ Bienvenue dans le réseau YOON !`);
     } finally {
       setLoading(false);
     }
+
+    // Sauvegarder l'expert dans localStorage pour la démonstration
+    const newExpert = {
+      id: Date.now().toString(),
+      user_id: Date.now().toString(),
+      specialties: formData.specialties,
+      bio: formData.bio,
+      is_verified: true,
+      is_available: true,
+      consultation_fee: parseInt(formData.consultation_fee),
+      experience_years: parseInt(formData.experience_years),
+      user: {
+        full_name: `${formData.first_name} ${formData.last_name}`,
+        avatar_url: null
+      }
+    };
+
+    const existingExperts = JSON.parse(localStorage.getItem('yoon_new_experts') || '[]');
+    existingExperts.push(newExpert);
+    localStorage.setItem('yoon_new_experts', JSON.stringify(existingExperts));
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, FileText, MessageSquare, HelpCircle, LogOut, Shield } from 'lucide-react';
+import { User, Settings, FileText, MessageSquare, HelpCircle, LogOut, Shield, Award, TrendingUp, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfilePage() {
@@ -14,9 +14,9 @@ export default function ProfilePage() {
   const menuItems = [
     { icon: User, label: 'Informations personnelles', path: '/profile/edit' },
     { icon: FileText, label: 'Mes documents', path: '/home' },
-    { icon: MessageSquare, label: 'Mes consultations', path: '/messages' },
+    { icon: MessageSquare, label: 'Mes messages', path: '/messages' },
     { icon: Settings, label: 'Paramètres', path: '/settings' },
-    { icon: HelpCircle, label: 'Aide & Support', path: '/profile/help' },
+    { icon: HelpCircle, label: 'Aide & Support', path: '/help' },
   ];
 
   if (profile?.role === 'admin') {
@@ -29,7 +29,7 @@ export default function ProfilePage() {
 
   if (profile?.role === 'expert') {
     menuItems.splice(2, 0, {
-      icon: Shield,
+      icon: Award,
       label: 'Mon profil expert',
       path: '/expert-profile'
     });
@@ -80,12 +80,52 @@ export default function ProfilePage() {
 
         {profile?.role === 'expert' && (
           <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <h3 className="font-bold text-gray-800 mb-2">Statut Expert</h3>
-            <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${profile ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-              <span className="text-sm text-gray-600">
-                Compte vérifié et actif
-              </span>
+            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Award className="w-5 h-5 text-[#6B4C4C]" />
+              Statut Expert
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-sm text-gray-600">Compte vérifié et actif</span>
+                </div>
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Validé</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 pt-3 border-t border-gray-100">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-[#6B4C4C]">0</div>
+                  <div className="text-xs text-gray-500">Consultations</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-[#6B4C4C]">4.5</div>
+                  <div className="text-xs text-gray-500">Note</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-[#6B4C4C]">98%</div>
+                  <div className="text-xs text-gray-500">Réussite</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {profile?.role === 'citizen' && (
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#6B4C4C]" />
+              Activité Citoyen
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-lg font-bold text-[#6B4C4C]">0</div>
+                <div className="text-xs text-gray-500">Consultations</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[#6B4C4C]">0</div>
+                <div className="text-xs text-gray-500">Documents</div>
+              </div>
             </div>
           </div>
         )}

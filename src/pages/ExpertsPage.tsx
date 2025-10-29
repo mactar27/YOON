@@ -13,7 +13,6 @@ interface Expert {
   consultation_fee: number | null;
   user: {
     full_name: string;
-    avatar_url: string | null;
   };
 }
 
@@ -44,30 +43,48 @@ export default function ExpertsPage() {
 
   const loadExperts = async () => {
     try {
+      // Essayer de charger depuis Supabase d'abord
       const { data, error } = await supabase
         .from('legal_experts')
         .select(`
           *,
-          user:user_profiles(full_name, avatar_url)
+          user:user_profiles(full_name)
         `)
         .eq('is_verified', true)
+        .eq('is_available', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.warn('Supabase error:', error);
+        throw error;
+      }
 
-      // Utiliser directement getMockExperts() qui inclut déjà les nouveaux experts
-      const allExperts = getMockExperts();
+      // Charger les experts nouvellement inscrits depuis localStorage
+      const newExpertsFromStorage = JSON.parse(localStorage.getItem('yoon_new_experts') || '[]');
 
-      // Si on a des données de la DB, les ajouter au début
-      if (data && data.length > 0) {
-        setExperts([...data, ...allExperts]);
+      // Combiner les experts de Supabase et ceux du localStorage
+      const allExperts = [...(data || []), ...newExpertsFromStorage];
+
+      // Si aucun expert trouvé, utiliser les données mockées
+      if (allExperts.length === 0) {
+        console.log('Using mock experts');
+        setExperts(getMockExperts());
       } else {
+        console.log('Loaded experts:', allExperts.length, 'from Supabase +', newExpertsFromStorage.length, 'from localStorage');
         setExperts(allExperts);
       }
     } catch (error) {
-      console.error('Error loading experts:', error);
-      // En cas d'erreur, utiliser uniquement les données mock
-      setExperts(getMockExperts());
+      console.error('Error loading experts from Supabase, using localStorage + mock:', error);
+
+      // En cas d'erreur Supabase, utiliser les experts du localStorage + mock
+      const newExpertsFromStorage = JSON.parse(localStorage.getItem('yoon_new_experts') || '[]');
+      const mockExperts = getMockExperts();
+
+      if (newExpertsFromStorage.length > 0) {
+        setExperts([...newExpertsFromStorage, ...mockExperts]);
+      } else {
+        setExperts(mockExperts);
+      }
     } finally {
       setLoading(false);
     }

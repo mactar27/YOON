@@ -1,4 +1,4 @@
-import { Home, Search, MessageSquare, Scale, Heart, Shield } from 'lucide-react';
+import { Home, Search, MessageSquare, Scale, Heart, Shield, User } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -12,7 +12,7 @@ export default function BottomNav() {
     { icon: Search, label: 'Recherche', path: '/search' },
     { icon: MessageSquare, label: 'Messages', path: '/messages' },
     { icon: Scale, label: 'Experts', path: '/experts' },
-    { icon: Heart, label: 'Favoris', path: '/favorites' },
+    { icon: User, label: 'Profil', path: '/profile' },
   ];
 
   // Ajouter l'onglet admin si l'utilisateur est admin

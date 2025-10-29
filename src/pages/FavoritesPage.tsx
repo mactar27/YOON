@@ -46,10 +46,41 @@ export default function FavoritesPage() {
     loadContents();
   }, [selectedCategory]);
 
+  // Recharger automatiquement les favoris quand on revient sur la page
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log('FavoritesPage: focus event, reloading favorites');
+      loadFavorites();
+      loadContents();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
+  // Recharger aussi quand on revient via navigation
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('FavoritesPage: visibility change, reloading favorites');
+        loadFavorites();
+        loadContents();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   const loadFavorites = () => {
     const savedFavorites = localStorage.getItem('yoon_favorites');
     if (savedFavorites) {
-      setFavorites(new Set(JSON.parse(savedFavorites)));
+      const parsedFavorites = JSON.parse(savedFavorites);
+      console.log('FavoritesPage: loaded favorites from localStorage:', parsedFavorites.length, 'items');
+      setFavorites(new Set(parsedFavorites));
+    } else {
+      console.log('FavoritesPage: no favorites found in localStorage');
+      setFavorites(new Set());
     }
   };
 
