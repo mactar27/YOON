@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animations pour les toasts professionnels */
+@keyframes slide-down {
+  from {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-in;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Responsive utilities pour mobile */
+  .mobile-container {
+    @apply px-4 sm:px-6 max-w-2xl mx-auto;
+  }
+
+  .mobile-padding {
+    @apply px-4 py-4 sm:px-6 sm:py-6;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .mobile-heading {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  /* Optimisations pour les écrans tactiles */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Gestion des orientations */
+  @media screen and (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact {
+      @apply py-2;
+    }
+  }
+}
+
+/* Mode sombre */
+.dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  color: rgb(243 244 246 / var(--tw-text-opacity));
+}
+
+.dark .bg-white {
+  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.dark .bg-gray-100 {
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+
+.dark .text-gray-800 {
+  color: rgb(243 244 246 / var(--tw-text-opacity));
+}
+
+.dark .text-gray-700 {
+  color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
+.dark .text-gray-600 {
+  color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+
+.dark .text-gray-500 {
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.dark .border-gray-200 {
+  border-color: rgb(55 65 81 / var(--tw-border-opacity));
+}
+
+.dark .border-gray-300 {
+  border-color: rgb(75 85 99 / var(--tw-border-opacity));
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
