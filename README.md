@@ -1,4 +1,3 @@
-
 # YOON
 
 YOON est une plateforme numérique dédiée à l’accès au droit au Sénégal.
@@ -7,190 +6,115 @@ Son objectif est de faciliter l’accès aux informations juridiques et de mettr
 Dans un contexte où l’accès aux services juridiques reste complexe, coûteux et peu accessible, YOON propose une solution digitale innovante pour démocratiser l’accès au droit.
 
 https://github.com/user-attachments/assets/06d7b811-8394-4fd8-a801-1cd150a6ea8d
+
 ## Sommaire
 
-- Présentation
-- Problématique
-- Objectifs
-- Fonctionnalités
-- Architecture
-- Démarrage rapide
-- Données juridiques (SQL / Supabase)
-- Comptes de démonstration
-- Scripts
+- [Présentation](#présentation)
+- [Architecture Technique](#architecture-technique)
+- [Fonctionnalités](#fonctionnalités-principales)
+- [Démarrage Rapide](#démarrage-rapide)
+- [Configuration (.env)](#configuration-env)
+- [Structure du Projet](#structure-du-projet)
+- [Comptes de Démonstration](#comptes- de-démonstration)
+- [Licence](#licence)
 
 ## Présentation
 
-Le dépôt contient principalement une application **frontend** (web + mobile via Capacitor) qui illustre :
+YOON est une application multi-plateforme (Web, Android, iOS) qui centralise les textes juridiques sénégalais et simplifie la communication entre citoyens et professionnels du droit.
 
-- Une expérience de consultation/recherche de contenus juridiques
-- Des écrans de messagerie, consultations et paiements (UI)
-- Une authentification de démonstration basée sur le stockage local
+## Architecture Technique
 
-## Problématique
+Le projet repose sur une architecture moderne et robuste :
 
-Au Sénégal, plusieurs difficultés limitent l’accès au droit :
+- **Frontend** : React 18 + TypeScript + Vite + TailwindCSS.
+- **Mobile** : Capacitor (intégration native Android/iOS).
+- **Backend** : Node.js + Express (API REST).
+- **Base de Données** : MySQL (gérée via Docker ou service cloud).
+- **Authentification** : Sessions express avec stockage MySQL.
 
-- Dispersion des textes juridiques (Journal Officiel, sites gouvernementaux, etc.)
-- Complexité du langage juridique difficile à comprendre pour les citoyens
-- Coût élevé des services juridiques
-- Difficulté d’accès aux experts (distance, disponibilité)
-- Manque de plateformes numériques dédiées
+## Fonctionnalités Principales
 
-## Objectifs
+- **Recherche Juridique** : Consultation et recherche de textes de loi par catégories.
+- **Mise en Relation** : Annuaire d'experts et prise de rendez-vous.
+- **Messagerie** : Chat sécurisé entre citoyens et experts.
+- **Consultations** : Suivi des demandes de conseils juridiques.
+- **Paiements** : Interface prête pour Orange Money et autres services (UI).
 
-Le projet YOON vise à :
+## Démarrage Rapide
 
-- Centraliser les textes juridiques sénégalais
-- Faciliter leur recherche et leur compréhension
-- Mettre en relation les citoyens et les experts juridiques
-- Réduire les coûts d’accès aux services juridiques
-- Promouvoir l’inclusion numérique
+### 1. Prérequis
 
-## Fonctionnalités principales
-
-- Recherche de textes juridiques et navigation par catégories
-- Mise en relation avec des experts juridiques
-- Demande et gestion de consultations
-- Messagerie entre citoyens et experts
-- Gestion de méthodes de paiement (ex: Orange Money) (UI)
-- Interface web responsive
-
-## Architecture technique
-
-Le projet repose sur une architecture client-serveur moderne.
-
-- **Frontend**
-  - React + TypeScript
-  - Vite
-  - TailwindCSS
-  - React Router
-  - Capacitor (Android/iOS)
-- **Backend / API**
-  - À intégrer selon l’environnement cible (le repo contient surtout le frontend).
-- **Base de données / contenu juridique**
-  - Des scripts SQL sont fournis pour initialiser une table `legal_content` (voir plus bas).
-
-## Acteurs du système
-
-- **Citoyen**
-  - Recherche des informations
-  - Consulte des experts
-- **Expert juridique**
-  - Fournit des services et conseils
-- **Administrateur**
-  - Gère la plateforme
-
-## Impact
-
-YOON contribue à :
-
-- Améliorer l’accès à la justice
-- Réduire les inégalités face au droit
-- Moderniser les services juridiques au Sénégal
-- Renforcer la sensibilisation juridique des citoyens
-
-## Conclusion
-
-YOON est une solution innovante qui combine technologie et droit pour créer un système accessible, structuré et inclusif, adapté aux réalités du contexte sénégalais.
-
-## Démarrage rapide
-
-### Prérequis
-
-- Node.js (LTS recommandé)
+- Node.js (LTS)
+- Docker Desktop (pour la base de données)
 - npm
 
-### Installation
+### 2. Base de Données (Docker)
 
+Lancez MySQL avec Docker Compose :
 ```bash
-npm install
+docker-compose up -d
 ```
 
-### Lancer en local
+### 3. Backend
+
+Configurez les variables d'environnement dans `backend/.env` (voir section [Configuration](#configuration-env)).
 
 ```bash
+cd backend
+npm install
 npm run dev
 ```
+Le backend sera disponible sur `http://localhost:4000`.
 
-Puis ouvre l’URL affichée par Vite (souvent `http://localhost:5173`).
-
-### Build web
-
-```bash
-npm run build
-```
-
-### Preview du build
+### 4. Frontend
 
 ```bash
-npm run preview
+# Dans la racine du projet
+npm install
+npm run dev
+```
+Ouvrez `http://localhost:5173` dans votre navigateur.
+
+## Configuration (.env)
+
+Créez un fichier `.env` dans le dossier `backend/` avec les variables suivantes :
+
+```dotenv
+PORT=4000
+FRONTEND_ORIGIN=http://localhost:5173
+SESSION_SECRET=votre_secret_aleatoire_ici
+
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=yoon
+MYSQL_PASSWORD=yoon
+MYSQL_DATABASE=yoon
 ```
 
-## Build mobile (Capacitor)
+## Structure du Projet
 
-Le projet est configuré avec Capacitor (`appId: com.yoon.app`, `webDir: dist`).
+- `src/` : Application React (pages, composants, contextes).
+- `backend/` : Serveur API Express et modèles de données.
+- `android/`, `ios/` : Projets natifs Capacitor.
+- `public/` : Assets statiques.
+- `docker-compose.yml` : Configuration de l'environnement MySQL.
 
-- Build web:
+## Build Mobile (Capacitor)
 
-```bash
-npm run build
-```
+1. Build web : `npm run build`
+2. Sync Capacitor : `npx cap sync`
+3. Ouvrir nativement : `npx cap open android` ou `ios`
 
-- Synchroniser Capacitor:
+## Comptes de Démonstration
 
-```bash
-npx cap sync
-```
-
-- Ouvrir les projets natifs:
-
-```bash
-npx cap open android
-npx cap open ios
-```
-
-## Données juridiques (SQL / Supabase)
-
-Le repo contient des scripts SQL pour créer une table de contenus juridiques et injecter des exemples :
-
-- `create_tables.sql`
-- `insert_legal_content.sql`
-
-Ces scripts sont indiqués comme destinés à Supabase (exécution via l’interface SQL Supabase).
-
-## Comptes de démonstration
-
-L’authentification côté app utilise un stockage local (LocalStorage) et expose des comptes de démonstration :
-
-- `expert@yoon.sn` / `expert123`
-- `citizen@yoon.sn` / `citizen123`
-- `admin@yoon.sn` / `admin123`
-
-## Scripts
-
-- `npm run dev`: serveur de dev Vite
-- `npm run build`: build production
-- `npm run preview`: prévisualiser le build
-- `npm run lint`: lint
-- `npm run typecheck`: vérification TypeScript
-
-## Structure du projet
-
-- `src/`: application React (pages, composants, contextes)
-- `android/`, `ios/`: projets natifs Capacitor
-- `create_tables.sql`, `insert_legal_content.sql`: scripts SQL (initialisation + exemples)
-
-## Contribuer
-
-- Ouvre une issue pour décrire le besoin (bug, amélioration, feature)
-- Propose une PR avec une description claire et des étapes de test
-
-## Licence
-
-Licence non spécifiée pour le moment. Ajoute un fichier `LICENSE` si tu souhaites clarifier les conditions d’utilisation.
+- **Expert** : `expert@yoon.sn` / `expert123`
+- **Citoyen** : `citizen@yoon.sn` / `citizen123`
+- **Admin** : `admin@yoon.sn` / `admin123`
 
 ## Avertissement
 
-Les informations juridiques et résumés affichés par l’application ne constituent pas un avis juridique. Pour une situation concrète, consulte un professionnel.
+Les informations juridiques affichées ne constituent pas un avis juridique officiel. Consultez toujours un professionnel pour vos démarches légales.
 
+## Licence
+
+Licence non spécifiée pour le moment.
