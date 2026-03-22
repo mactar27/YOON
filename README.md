@@ -5,7 +5,11 @@ Son objectif est de faciliter l’accès aux informations juridiques et de mettr
 
 Dans un contexte où l’accès aux services juridiques reste complexe, coûteux et peu accessible, YOON propose une solution digitale innovante pour démocratiser l’accès au droit.
 
-https://github.com/user-attachments/assets/06d7b811-8394-4fd8-a801-1cd150a6ea8d
+## 🎥 Demo Video
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/06d7b811-8394-4fd8-a801-1cd150a6ea8d" controls width="80%"></video>
+</p>
 
 ## Sommaire
 
